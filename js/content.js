@@ -5,7 +5,7 @@ document.addEventListener("contextmenu", e => {
 }, true);
 
 document.addEventListener('keydown', function (event) {
-    console.log( "key " + event.key );
+    console.log("key " + event.key);
     if (event.keyCode === 39) {
         event.preventDefault();
         goNextPage()
@@ -23,12 +23,12 @@ function getElementByXPath(xpath) {
     return result.singleNodeValue;
 }
 
-function getElementInfo(element){
+function getElementInfo(element) {
     const keepedTags = ['tagName', 'id', 'className', 'textContent']
     const result = {}
 
     keepedTags.map(key => {
-        if(element[key])
+        if (element[key])
             result[key] = element[key]
     })
 

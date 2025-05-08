@@ -16,14 +16,13 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === "next-page-shortcut") {
-        chrome.tabs.sendMessage(tab.id, { action: "logElement" });
+        chrome.tabs.sendMessage(tab.id, {action: "logElement"});
     }
 
     if (info.menuItemId === "click") {
-        chrome.tabs.sendMessage(tab.id, { action: "clickElement", detail });
+        chrome.tabs.sendMessage(tab.id, {action: "clickElement", detail});
     }
 });
-
 
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -42,9 +41,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 console.log(`儲存 ${hostname} 的資料：`, info);
             });
         });
-    }
-    else if (message.action === "getShortcut") {
-        console.log( "getShortcut" );
+    } else if (message.action === "getShortcut") {
+        console.log("getShortcut");
         sendResponse({
             detail
         })
