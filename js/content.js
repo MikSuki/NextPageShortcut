@@ -63,6 +63,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 });
 
+function parseToXpath(detail) {
+    let condition = ""
+
+    if(detail.textContent) {
+        if(condition.length > 0) {
+            condition += " and "
+        }
+        condition += `text() ='${detail.textContent}'`
+    }
+
+    if(detail.className){
+        const classNames = detail.className.trim().split(/\s+/)
+        console.log(classNames)
+        classNames.map(className => {
+            if(condition.length > 0) {
+                condition += " and "
+            }
+            condition += `contains(@class, '${className}')`
+        })
+    }
+
+    return `//${detail.tagName} [${condition}]`
+}
+
 function goNextPage() {
     chrome.runtime.sendMessage({
         action: "getShortcut",
@@ -78,7 +102,7 @@ function goNextPage() {
         for (const [key, value] of Object.entries(detail)) {
             console.log(`${key}: ${value}`);
         }
-        const xpath = `//${detail.tagName}[text() ='${detail.textContent}']`
+        const xpath = parseToXpath(detail)
         const target = getElementByXPath(xpath);
         console.log(`${xpath} `);
         console.log(target);
