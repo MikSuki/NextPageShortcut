@@ -14,6 +14,11 @@ export default defineConfig({
             output: {
                 entryFileNames: "[name].js"
             }
+        },
+        watch: {
+            chokidar: {
+                ignored: ['node_modules'],
+            }
         }
     },
     plugins: [
