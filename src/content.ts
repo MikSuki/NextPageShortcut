@@ -1,7 +1,7 @@
-let lastClickedElement = null;
+let lastClickedElement: HTMLElement | null
 
 document.addEventListener("contextmenu", e => {
-    lastClickedElement = e.target;
+    lastClickedElement = e.target as HTMLElement;
 }, true);
 
 document.addEventListener('keydown', function (event) {
@@ -12,7 +12,7 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
-function getElementByXPath(xpath) {
+function getElementByXPath(xpath: string) {
     const result = document.evaluate(
         xpath,
         document,
@@ -23,19 +23,37 @@ function getElementByXPath(xpath) {
     return result.singleNodeValue;
 }
 
-function getElementInfo(element) {
-    const keepedTags = ['tagName', 'id', 'className', 'textContent']
-    const result = {}
+interface ElementDetail {
+    tagName: string | undefined;
+    id: string | undefined;
+    className: string | undefined;
+    textContent: string | undefined;
+}
 
-    keepedTags.map(key => {
-        if (element[key])
-            result[key] = element[key]
-    })
+function getElementInfo(element: HTMLElement) {
+    // const keepedTags = ['tagName', 'id', 'className', 'textContent']
+    const result: ElementDetail = {
+        tagName: undefined,
+        id: undefined,
+        className: undefined,
+        textContent: undefined,
+    }
+
+    if(element.textContent)
+        result.textContent = element.textContent;
+
+    if(element.tagName)
+        result.tagName = element.tagName;
+
+    if(element.className)
+        result.className = element.className;
+
+
 
     return result
 }
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message) => {
     if (message.action === "clickElement") {
         goNextPage()
     }
@@ -63,7 +81,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 });
 
-function parseToXpath(detail) {
+function parseToXpath(detail: ElementDetail) {
     let condition = ""
 
     if(detail.textContent) {
@@ -103,7 +121,7 @@ function goNextPage() {
             console.log(`${key}: ${value}`);
         }
         const xpath = parseToXpath(detail)
-        const target = getElementByXPath(xpath);
+        const target = getElementByXPath(xpath) as HTMLElement;
         console.log(`${xpath} `);
         console.log(target);
         target.click()

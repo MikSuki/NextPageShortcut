@@ -1,4 +1,8 @@
-let detail = null
+import Tab = chrome.tabs.Tab;
+import OnClickData = chrome.contextMenus.OnClickData;
+import MessageSender = chrome.runtime.MessageSender;
+
+let detail: Object = {}
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
@@ -14,7 +18,9 @@ chrome.runtime.onInstalled.addListener(() => {
     });
 });
 
-chrome.contextMenus.onClicked.addListener((info, tab) => {
+chrome.contextMenus.onClicked.addListener((info: OnClickData, tab: Tab | undefined) => {
+    if (!tab || !tab.id) return
+
     if (info.menuItemId === "next-page-shortcut") {
         chrome.tabs.sendMessage(tab.id, {action: "logElement"});
     }
@@ -22,10 +28,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === "click") {
         chrome.tabs.sendMessage(tab.id, {action: "clickElement", detail});
     }
+
 });
 
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, _: MessageSender, sendResponse) => {
     if (message.action === "keepShortcut") {
 
         detail = message.detail;
@@ -38,7 +45,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             chrome.storage.local.set({
                 [hostname]: data
             }, () => {
-                console.log(`儲存 ${hostname} 的資料：`, info);
+                console.log(`儲存 ${hostname} 的資料：`, detail);
             });
         });
     } else if (message.action === "getShortcut") {
