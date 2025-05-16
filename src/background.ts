@@ -53,16 +53,6 @@ chrome.contextMenus.onClicked.addListener((info: OnClickData, tab: Tab | undefin
             }
         })
     )
-    // if (!tab || !tab.id) return
-    //
-    // if (info.menuItemId === "next-page-shortcut") {
-    //     chrome.tabs.sendMessage(tab.id, {action: "logElement"});
-    // }
-    //
-    // if (info.menuItemId === "click") {
-    //     chrome.tabs.sendMessage(tab.id, {action: "clickElement", detail});
-    // }
-    //
 });
 
 
