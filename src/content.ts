@@ -2,6 +2,8 @@ import {pipe} from "fp-ts/function";
 import * as Record from 'fp-ts/Record'
 import * as O from 'fp-ts/Option'
 import {toast} from "./toast.ts";
+import {ElementDetail} from "./interface.ts";
+import {Uills} from "./utils.ts";
 // import * as E from 'fp-ts/Either'
 
 let lastClickedElement: HTMLElement | null
@@ -18,23 +20,6 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
-function getElementByXPath(xpath: string) {
-    const result = document.evaluate(
-        xpath,
-        document,
-        null,
-        XPathResult.FIRST_ORDERED_NODE_TYPE,
-        null
-    );
-    return result.singleNodeValue;
-}
-
-interface ElementDetail {
-    tagName: string | undefined;
-    id: string | undefined;
-    className: string | undefined;
-    textContent: string | undefined;
-}
 
 function getElementInfo(element: HTMLElement) {
     // const keepedTags = ['tagName', 'id', 'className', 'textContent']
@@ -102,36 +87,6 @@ chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
     )
 });
 
-function parseToXpath(detail: ElementDetail): string {
-    let condition = ""
-
-    if (detail.textContent) {
-        if (condition.length > 0) {
-            condition += " and "
-        }
-        condition += `text() ='${detail.textContent}'`
-    }
-
-    if (detail.className) {
-        const classNames = detail.className.trim().split(/\s+/)
-        console.log(classNames)
-        classNames.map(className => {
-            if (condition.length > 0) {
-                condition += " and "
-            }
-            condition += `contains(@class, '${className}')`
-        })
-    }
-
-    return `//${detail.tagName} [${condition}]`
-}
-
-
-function getElementByDetail(detail: ElementDetail) {
-    const xpath = parseToXpath(detail)
-    const target = getElementByXPath(xpath) as HTMLElement;
-    return target
-}
 
 function goNextPage() {
     chrome.runtime.sendMessage({
@@ -144,7 +99,7 @@ function goNextPage() {
             response.detail,
             O.fromNullable,
             O.chain(detail =>
-                O.fromNullable(getElementByDetail(detail as ElementDetail))
+                O.fromNullable(Uills.getElementByDetail(detail as ElementDetail))
             ),
             O.match(
                 () => console.log(`target not found`),
