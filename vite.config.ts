@@ -1,34 +1,21 @@
-import { defineConfig } from "vite"
-import { resolve } from "path"
-import { viteStaticCopy } from 'vite-plugin-static-copy'
+import {defineConfig} from 'vite'
+import {chromeExtension} from 'vite-plugin-chrome-extension'
+import {resolve} from 'path'
 
 export default defineConfig({
-    build: {
-        outDir: "dist",
-        emptyOutDir: true,
-        rollupOptions: {
-            input: {
-                content: resolve(__dirname, "src/content.ts"),
-                background: resolve(__dirname, "src/background.ts")
-            },
-            output: {
-                entryFileNames: "[name].js"
-            }
+    resolve: {
+        alias: {
+            '@': resolve(__dirname, 'src'),
         },
-        watch: {
-            chokidar: {
-                ignored: ['node_modules'],
-            }
-        }
     },
-    plugins: [
-        viteStaticCopy({
-            targets: [
-                {
-                    src: 'manifest.json',
-                    dest: '.'  // '.' 代表複製到 dist 根目錄
-                }
-            ]
-        })
-    ]
+    build: {
+        rollupOptions: {
+            input: "src/manifest.json"
+
+        },
+    },
+    plugins:
+        [
+            chromeExtension(), // ⬅️ 傳入 manifest 給插件
+        ],
 })
