@@ -4,7 +4,9 @@ import * as O from 'fp-ts/Option'
 import {toast} from "./toast.ts";
 import {ElementDetail} from "./interface.ts";
 import {Uills} from "./utils.ts";
-// import * as E from 'fp-ts/Either'
+import {annotate} from 'rough-notation';
+import * as TE from 'fp-ts/TaskEither';
+import * as E from 'fp-ts/Either'
 
 let lastClickedElement: HTMLElement | null
 
@@ -73,6 +75,32 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
             shortcutAction: shortcutAction,
             detail: detail,
         });
+    },
+    async showShortcut(shortcutAction: string) {
+        console.log(`showShortcut: ${shortcutAction}`);
+        const target = await getShortcutElement(shortcutAction);
+
+        pipe(
+            target,
+            E.match(
+                (err) => console.error(err),
+                target => {
+                    const annotation = annotate(target, {
+                        type: 'circle',
+                        color: 'red',
+                        animationDuration: 800,
+                        padding: 10
+                    });
+                    target.scrollIntoView({behavior: "smooth", block: "center"});
+                    annotation.show();
+
+                    setTimeout(() => {
+                        annotation.hide();
+                    }, 5000);
+                }
+            )
+        )
+        console.log(`showShortcut end: ${shortcutAction}`);
     }
 }
 
@@ -92,6 +120,47 @@ chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
         )
     )
 });
+
+
+function sendMessage(action: string, shortcutAction: string) {
+    return TE.tryCatch(
+        () =>
+            new Promise<Response>((resolve, reject) => {
+                chrome.runtime.sendMessage({
+                    action,
+                    shortcutAction,
+                    hostname: location.hostname,
+                }, (response) => {
+                    if (chrome.runtime.lastError) {
+                        reject(new Error(chrome.runtime.lastError.message));
+                    } else {
+                        console.log('get the response in TE')
+                        resolve(response);
+                    }
+                });
+            }),
+        (reason) => (reason instanceof Error ? reason : new Error(String(reason)))
+    )
+}
+
+async function getShortcutElement(shortcutAction: string) {
+    const response = await sendMessage('getShortcut', shortcutAction)()
+
+    const getDetail = (response: Response) => {
+        // TODO: add type to fix this
+        // @ts-ignore
+        const {detail} = response
+        console.log(detail)
+        return detail as ElementDetail
+    }
+
+    return pipe(
+        response,
+        E.map(getDetail),
+        E.map(Uills.getElementByDetail),
+    )
+}
+
 
 function clickShortcutElement(shortcutAction: string) {
     chrome.runtime.sendMessage({

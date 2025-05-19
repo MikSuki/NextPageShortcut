@@ -24,6 +24,12 @@ chrome.runtime.onInstalled.addListener(() => {
         title: "click",
         contexts: ["all"]
     });
+
+    chrome.contextMenus.create({
+        id: "show-shortcut",
+        title: "showShortcut",
+        contexts: ["all"]
+    });
 });
 
 
@@ -56,6 +62,9 @@ chrome.contextMenus.onClicked.addListener((info: OnClickData, tab: Tab | undefin
                     break
                 case  "click":
                     chrome.tabs.sendMessage(context.tabId, {action: "clickElement", shortcutAction: 'nextPage'});
+                    break
+                case  "show-shortcut":
+                    chrome.tabs.sendMessage(context.tabId, {action: "showShortcut", shortcutAction: 'nextPage'});
                     break
             }
         })
