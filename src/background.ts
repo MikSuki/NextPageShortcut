@@ -6,12 +6,16 @@ import * as Record from 'fp-ts/Record'
 // import * as O from 'fp-ts/Option'
 import * as E from 'fp-ts/Either'
 
-let detail: Object = {}
-
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "next-page-shortcut" ,
-        title: "keep this key",
+        title: 'keep this key for "next page"',
+        contexts: ["all"]
+    });
+
+    chrome.contextMenus.create({
+        id: "last-page-shortcut" ,
+        title: 'keep this key for "last page"',
         contexts: ["all"]
     });
 
@@ -45,10 +49,13 @@ chrome.contextMenus.onClicked.addListener((info: OnClickData, tab: Tab | undefin
         E.map(context => {
             switch (context.menuItemId) {
                 case "next-page-shortcut":
-                    chrome.tabs.sendMessage(context.tabId, {action: "logElement"});
+                    chrome.tabs.sendMessage(context.tabId, {action: "keepShortcut", shortcutAction: "nextPage"});
+                    break
+                case "last-page-shortcut":
+                    chrome.tabs.sendMessage(context.tabId, {action: "keepShortcut", shortcutAction: "lastPage"});
                     break
                 case  "click":
-                    chrome.tabs.sendMessage(context.tabId, {action: "clickElement", detail});
+                    chrome.tabs.sendMessage(context.tabId, {action: "clickElement", shortcutAction: 'nextPage'});
                     break
             }
         })
@@ -57,7 +64,7 @@ chrome.contextMenus.onClicked.addListener((info: OnClickData, tab: Tab | undefin
 
 
 const actionHandler: Record<string, (message: any, sendResponse: (response?: any) => void) => void> = {
-    keepShortcut: (message: any) => {
+    store: (message: any) => {
         const detail = message.detail;
         const hostname = message.hostname;
         const shortcutAction = message.shortcutAction;

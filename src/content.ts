@@ -18,6 +18,11 @@ document.addEventListener('keydown', function (event) {
         event.preventDefault();
         goNextPage()
     }
+
+    if (event.keyCode === 37) {
+        event.preventDefault();
+        goLastPage()
+    }
 });
 
 
@@ -43,12 +48,12 @@ function getElementInfo(element: HTMLElement) {
     return result
 }
 
-const messageHandler: Record<string, () => void> = {
+const messageHandler: Record<string, (shortcutAction: string) => void> = {
     clickElement: () => {
         goNextPage()
     },
 
-    logElement: () => {
+    keepShortcut: (shortcutAction: string) => {
         if (!lastClickedElement) {
             console.warn("❗No element recorded.");
             return;
@@ -63,9 +68,9 @@ const messageHandler: Record<string, () => void> = {
         console.log('-------------------------');
 
         chrome.runtime.sendMessage({
-            action: "keepShortcut",
+            action: "store",
             hostname: location.hostname,
-            shortcutAction: "nextPage",
+            shortcutAction: shortcutAction,
             detail: detail,
         });
     }
@@ -73,6 +78,7 @@ const messageHandler: Record<string, () => void> = {
 
 interface ChromeMessage {
     action: string;
+    shortcutAction: string;
 }
 
 chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
@@ -82,19 +88,18 @@ chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
         O.fromNullable,
         O.match(
             () => console.log(`action not found`),
-            action => messageHandler[action](),
+            action => messageHandler[action](message.shortcutAction),
         )
     )
 });
 
-
-function goNextPage() {
+function clickShortcutElement(shortcutAction: string) {
     chrome.runtime.sendMessage({
         action: "getShortcut",
-        shortcutAction: "nextPage",
+        shortcutAction: shortcutAction,
         hostname: location.hostname,
     }, (response) => {
-        console.log('background 回來的資料：', response)
+        console.log('backgrounds 回來的資料：', response)
 
         pipe(
             response.detail,
@@ -106,10 +111,17 @@ function goNextPage() {
                 () => console.log(`target not found`),
                 target => {
                     target.click()
-                    toast("next page")
+                    toast(shortcutAction)
                 }
             )
         )
     })
 }
 
+function goNextPage() {
+    clickShortcutElement("nextPage")
+}
+
+function goLastPage() {
+    clickShortcutElement("lastPage")
+}
