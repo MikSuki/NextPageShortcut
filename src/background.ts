@@ -60,13 +60,14 @@ const actionHandler: Record<string, (message: any, sendResponse: (response?: any
     keepShortcut: (message: any) => {
         const detail = message.detail;
         const hostname = message.hostname;
+        const shortcutAction = message.shortcutAction;
 
         chrome.storage.local.get([hostname], function (result) {
-            const data = result[hostname] || {};
-            data[message.action] = detail;
+            const origin = result[hostname];
+            origin[shortcutAction] = detail;
 
             chrome.storage.local.set({
-                [hostname]: data
+                [hostname]: origin
             }, () => {
                 console.log(`儲存 ${hostname} 的資料：`, detail);
             });
@@ -76,9 +77,13 @@ const actionHandler: Record<string, (message: any, sendResponse: (response?: any
     getShortcut: (message: any, sendResponse: (response?: any) => void) => {
         const hostname = message.hostname;
         chrome.storage.local.get([hostname], function (result) {
-            sendResponse({
-                detail: result[hostname]['keepShortcut']
-            });
+            const shortcutAction = message.shortcutAction;
+            const origin = result[hostname];
+            const send = {
+                detail: origin[shortcutAction]
+            }
+            console.log('send:' + send)
+            sendResponse(send);
         })
 
     },

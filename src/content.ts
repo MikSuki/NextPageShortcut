@@ -91,6 +91,7 @@ chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
 function goNextPage() {
     chrome.runtime.sendMessage({
         action: "getShortcut",
+        shortcutAction: "nextPage",
         hostname: location.hostname,
     }, (response) => {
         console.log('background 回來的資料：', response)
