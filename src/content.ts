@@ -4,11 +4,11 @@ import * as O from 'fp-ts/Option'
 import {toast} from "./toast.ts";
 import {ElementDetail} from "./interface.ts";
 import {Uills} from "./utils.ts";
-import {annotate} from 'rough-notation';
 import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either'
 import {ShortcutAction} from "./enum/ShortcutAction.ts";
 import {MessageAction} from "./enum/MessageAction.ts";
+import {Highlighter} from "./Highlighter.ts";
 
 let lastClickedElement: HTMLElement | null
 
@@ -88,20 +88,7 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
             E.match(
                 // TODO: show you don't have that shortcut
                 (err) => console.error(err),
-                target => {
-                    const annotation = annotate(target, {
-                        type: 'circle',
-                        color: 'red',
-                        animationDuration: 800,
-                        padding: 10
-                    });
-                    target.scrollIntoView({behavior: "smooth", block: "center"});
-                    annotation.show();
-
-                    setTimeout(() => {
-                        annotation.hide();
-                    }, 5000);
-                }
+                target => Highlighter.showElement(target)
             )
         )
         console.log(`showShortcut end: ${shortcut}`);
@@ -150,7 +137,7 @@ function sendMessage(action: MessageAction, shortcutAction: ShortcutAction) {
 
 async function getShortcutElement(shortcut: string) {
     const shortcutAction = Uills.stringToEnum(ShortcutAction, shortcut)
-    if(!shortcutAction) return E.left(new Error("key of shortcut not found"))
+    if (!shortcutAction) return E.left(new Error("key of shortcut not found"))
     const response = await sendMessage(MessageAction.getShortcut, shortcutAction)()
 
     const getDetail = (response: Response) => {
