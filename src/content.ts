@@ -7,6 +7,8 @@ import {Uills} from "./utils.ts";
 import {annotate} from 'rough-notation';
 import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either'
+import {ShortcutAction} from "./enum/ShortcutAction.ts";
+import {MessageAction} from "./enum/MessageAction.ts";
 
 let lastClickedElement: HTMLElement | null
 
@@ -76,13 +78,15 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
             detail: detail,
         });
     },
-    async showShortcut(shortcutAction: string) {
-        console.log(`showShortcut: ${shortcutAction}`);
-        const target = await getShortcutElement(shortcutAction);
+    async showShortcut(shortcut: string) {
+        console.log(`showShortcut: ${shortcut}`);
+
+        const target = await getShortcutElement(shortcut);
 
         pipe(
             target,
             E.match(
+                // TODO: show you don't have that shortcut
                 (err) => console.error(err),
                 target => {
                     const annotation = annotate(target, {
@@ -100,7 +104,7 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
                 }
             )
         )
-        console.log(`showShortcut end: ${shortcutAction}`);
+        console.log(`showShortcut end: ${shortcut}`);
     }
 }
 
@@ -122,7 +126,8 @@ chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
 });
 
 
-function sendMessage(action: string, shortcutAction: string) {
+function sendMessage(action: MessageAction, shortcutAction: ShortcutAction) {
+    console.log('send message', action, shortcutAction);
     return TE.tryCatch(
         () =>
             new Promise<Response>((resolve, reject) => {
@@ -143,8 +148,10 @@ function sendMessage(action: string, shortcutAction: string) {
     )
 }
 
-async function getShortcutElement(shortcutAction: string) {
-    const response = await sendMessage('getShortcut', shortcutAction)()
+async function getShortcutElement(shortcut: string) {
+    const shortcutAction = Uills.stringToEnum(ShortcutAction, shortcut)
+    if(!shortcutAction) return E.left(new Error("key of shortcut not found"))
+    const response = await sendMessage(MessageAction.getShortcut, shortcutAction)()
 
     const getDetail = (response: Response) => {
         // TODO: add type to fix this

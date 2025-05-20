@@ -43,7 +43,21 @@ function getElementByDetail(detail: ElementDetail) {
     return target
 }
 
+function stringToEnum<T extends { [key: string]: string }>(
+    enm: T,
+    value: string
+): T[keyof T] | undefined {
+    const entries = Object.entries(enm) as [keyof T, string][];
+    for (const [key, val] of entries) {
+        if (val === value) {
+            return enm[key];
+        }
+    }
+    return undefined;
+}
 
 export const Uills = {
-    getElementByDetail
+    getElementByDetail,
+    stringToEnum
 }
+
