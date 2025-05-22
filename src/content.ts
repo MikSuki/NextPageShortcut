@@ -127,35 +127,26 @@ async function getShortcutElement(shortcut: string) {
 }
 
 
-function clickShortcutElement(shortcutAction: string) {
-    chrome.runtime.sendMessage({
-        action: "getShortcut",
-        shortcutAction: shortcutAction,
-        hostname: location.hostname,
-    }, (response) => {
-        console.log('backgrounds 回來的資料：', response)
+async function clickShortcutElement(shortcutAction: string) {
+    const target = await getShortcutElement(shortcutAction);
 
-        pipe(
-            response.detail,
-            O.fromNullable,
-            O.chain(detail =>
-                O.fromNullable(Uills.getElementByDetail(detail as ElementDetail))
-            ),
-            O.match(
-                () => console.log(`target not found`),
-                target => {
-                    target.click()
-                    toast(shortcutAction)
-                }
-            )
+    pipe(
+        target,
+        E.match(
+            // TODO: show to user
+            () => console.log(`shortcut not found`),
+            target => {
+                target.click()
+                toast(shortcutAction)
+            }
         )
-    })
+    )
 }
 
 function goNextPage() {
-    clickShortcutElement("nextPage")
+    void clickShortcutElement("nextPage")
 }
 
-function goLastPage() {
-    clickShortcutElement("lastPage")
+async function goLastPage() {
+    void clickShortcutElement("lastPage")
 }
