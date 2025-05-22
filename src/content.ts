@@ -4,11 +4,11 @@ import * as O from 'fp-ts/Option'
 import {toast} from "./toast.ts";
 import {ElementDetail} from "./interface.ts";
 import {Uills} from "./utils.ts";
-import * as TE from 'fp-ts/TaskEither';
 import * as E from 'fp-ts/Either'
 import {ShortcutAction} from "./enum/ShortcutAction.ts";
 import {MessageAction} from "./enum/MessageAction.ts";
 import {Highlighter} from "./Highlighter.ts";
+import {Chrome} from "./Chrome.ts";
 
 let lastClickedElement: HTMLElement | null
 
@@ -113,32 +113,10 @@ chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
 });
 
 
-function sendMessage(action: MessageAction, shortcutAction: ShortcutAction) {
-    console.log('send message', action, shortcutAction);
-    return TE.tryCatch(
-        () =>
-            new Promise<Response>((resolve, reject) => {
-                chrome.runtime.sendMessage({
-                    action,
-                    shortcutAction,
-                    hostname: location.hostname,
-                }, (response) => {
-                    if (chrome.runtime.lastError) {
-                        reject(new Error(chrome.runtime.lastError.message));
-                    } else {
-                        console.log('get the response in TE')
-                        resolve(response);
-                    }
-                });
-            }),
-        (reason) => (reason instanceof Error ? reason : new Error(String(reason)))
-    )
-}
-
 async function getShortcutElement(shortcut: string) {
     const shortcutAction = Uills.stringToEnum(ShortcutAction, shortcut)
     if (!shortcutAction) return E.left(new Error("key of shortcut not found"))
-    const response = await sendMessage(MessageAction.getShortcut, shortcutAction)()
+    const response = await Chrome.sendMessage(MessageAction.getShortcut, shortcutAction)()
 
     const getDetail = (response: Response) => {
         // TODO: add type to fix this
