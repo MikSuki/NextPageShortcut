@@ -81,8 +81,10 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
     },
     async showShortcut(shortcut: string) {
         console.log(`showShortcut: ${shortcut}`);
+        const shortcutAction = Uills.stringToEnum(ShortcutAction, shortcut)
+        if (!shortcutAction) return E.left(new Error("key of shortcut not found"))
 
-        const target = await getShortcutElement(shortcut);
+        const target = await getShortcutElement(shortcutAction);
 
         pipe(
             target,
@@ -109,10 +111,7 @@ chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
 });
 
 
-async function getShortcutElement(shortcut: string) {
-    const shortcutAction = Uills.stringToEnum(ShortcutAction, shortcut)
-    if (!shortcutAction) return E.left(new Error("key of shortcut not found"))
-
+async function getShortcutElement(shortcutAction: ShortcutAction) {
     const response = await Chrome.sendMessage(
         new ChromeMessage(location.hostname, MessageAction.getShortcut, shortcutAction)
     )()
@@ -126,7 +125,7 @@ async function getShortcutElement(shortcut: string) {
 }
 
 
-async function clickShortcutElement(shortcutAction: string) {
+async function clickShortcutElement(shortcutAction: ShortcutAction) {
     const target = await getShortcutElement(shortcutAction);
 
     pipe(
@@ -143,9 +142,9 @@ async function clickShortcutElement(shortcutAction: string) {
 }
 
 function goNextPage() {
-    void clickShortcutElement("nextPage")
+    void clickShortcutElement(ShortcutAction.nextPage)
 }
 
 function goLastPage() {
-    void clickShortcutElement("lastPage")
+    void clickShortcutElement(ShortcutAction.lastPage)
 }
