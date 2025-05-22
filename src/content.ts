@@ -118,18 +118,11 @@ async function getShortcutElement(shortcut: string) {
     if (!shortcutAction) return E.left(new Error("key of shortcut not found"))
     const response = await Chrome.sendMessage(MessageAction.getShortcut, shortcutAction)()
 
-    const getDetail = (response: Response) => {
-        // TODO: add type to fix this
-        // @ts-ignore
-        const {detail} = response
-        console.log(detail)
-        return detail as ElementDetail
-    }
-
     return pipe(
         response,
-        E.map(getDetail),
-        E.map(Uills.getElementByDetail),
+        E.map((resp) => resp.detail as ElementDetail),
+        E.chain(E.fromNullable(new Error("message didn't has element information."))),
+        E.map(Uills.getElementByDetail)
     )
 }
 

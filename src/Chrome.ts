@@ -6,7 +6,7 @@ function sendMessage(action: MessageAction, shortcutAction: ShortcutAction) {
     console.log('send message', action, shortcutAction);
     return TE.tryCatch(
         () =>
-            new Promise<Response>((resolve, reject) => {
+            new Promise<any>((resolve, reject) => {
                 chrome.runtime.sendMessage({
                     action,
                     shortcutAction,
