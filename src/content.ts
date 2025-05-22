@@ -9,6 +9,7 @@ import {ShortcutAction} from "./enum/ShortcutAction.ts";
 import {MessageAction} from "./enum/MessageAction.ts";
 import {Highlighter} from "./Highlighter.ts";
 import {Chrome} from "./Chrome.ts";
+import {KeyCode} from "./enum/KeyCode.ts";
 
 let lastClickedElement: HTMLElement | null
 
@@ -17,13 +18,12 @@ document.addEventListener("contextmenu", e => {
 }, true);
 
 document.addEventListener('keydown', function (event) {
-    console.log("key " + event.key);
-    if (event.keyCode === 39) {
+    if (event.code === KeyCode.ArrowRight) {
         event.preventDefault();
         goNextPage()
     }
 
-    if (event.keyCode === 37) {
+    if (event.code === KeyCode.ArrowLeft) {
         event.preventDefault();
         goLastPage()
     }
@@ -147,6 +147,6 @@ function goNextPage() {
     void clickShortcutElement("nextPage")
 }
 
-async function goLastPage() {
+function goLastPage() {
     void clickShortcutElement("lastPage")
 }
