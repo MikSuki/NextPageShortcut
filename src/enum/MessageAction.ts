@@ -1,4 +1,5 @@
 export enum MessageAction {
-    getShortcut = "getShortcut"
+    getShortcut = "getShortcut",
+    storeShortcut = "storeShortcut",
 }
 

@@ -58,11 +58,14 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
         goNextPage()
     },
 
-    keepShortcut: (shortcutAction: string) => {
+    keepShortcut: (shortcut: string) => {
         if (!lastClickedElement) {
             console.warn("❗No element recorded.");
             return;
         }
+
+        const shortcutAction = Uills.stringToEnum(ShortcutAction, shortcut)
+        if (!shortcutAction) return
 
         const el = lastClickedElement
         const detail = getElementInfo(el)
@@ -72,12 +75,14 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
         console.log(detail)
         console.log('-------------------------');
 
-        chrome.runtime.sendMessage({
-            action: "store",
-            hostname: location.hostname,
-            shortcutAction: shortcutAction,
-            detail: detail,
-        });
+        Chrome.sendMessage(
+            new ChromeMessage(
+                location.hostname,
+                MessageAction.storeShortcut,
+                shortcutAction,
+                detail
+            )
+        )
     },
     async showShortcut(shortcut: string) {
         console.log(`showShortcut: ${shortcut}`);

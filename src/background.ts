@@ -73,7 +73,7 @@ chrome.contextMenus.onClicked.addListener((info: OnClickData, tab: Tab | undefin
 
 
 const actionHandler: Record<string, (message: any, sendResponse: (response?: any) => void) => void> = {
-    store: (message: any) => {
+    storeShortcut: (message: any) => {
         const detail = message.detail;
         const hostname = message.hostname;
         const shortcutAction = message.shortcutAction;
