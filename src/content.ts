@@ -10,6 +10,7 @@ import {MessageAction} from "./enum/MessageAction.ts";
 import {Highlighter} from "./Highlighter.ts";
 import {Chrome} from "./Chrome.ts";
 import {KeyCode} from "./enum/KeyCode.ts";
+import {ChromeMessage} from "./interface/ChromeMessage.ts";
 
 let lastClickedElement: HTMLElement | null
 
@@ -95,11 +96,6 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
     }
 }
 
-interface ChromeMessage {
-    action: string;
-    shortcutAction: string;
-}
-
 chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
 
     pipe(
@@ -116,7 +112,10 @@ chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
 async function getShortcutElement(shortcut: string) {
     const shortcutAction = Uills.stringToEnum(ShortcutAction, shortcut)
     if (!shortcutAction) return E.left(new Error("key of shortcut not found"))
-    const response = await Chrome.sendMessage(MessageAction.getShortcut, shortcutAction)()
+
+    const response = await Chrome.sendMessage(
+        new ChromeMessage(location.hostname, MessageAction.getShortcut, shortcutAction)
+    )()
 
     return pipe(
         response,
