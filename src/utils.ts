@@ -13,27 +13,27 @@ function getElementByXPath(xpath: string) {
 
 
 function parseToXpath(detail: ElementDetail): string {
-    let condition = ""
+    let textCondition = ""
+    let classNameCondition = ""
 
     if (detail.textContent) {
-        if (condition.length > 0) {
-            condition += " and "
-        }
-        condition += `text() ='${detail.textContent}'`
+        textCondition = `[text()[contains(.,'${detail.textContent.trim()}')]]`
     }
 
     if (detail.className) {
         const classNames = detail.className.trim().split(/\s+/)
         console.log(classNames)
         classNames.map(className => {
-            if (condition.length > 0) {
-                condition += " and "
+            if (classNameCondition.length > 0) {
+                classNameCondition += " and "
             }
-            condition += `contains(@class, '${className}')`
+            classNameCondition += `contains(@class, '${className}')`
         })
+        classNameCondition = `[${classNameCondition}]`
     }
 
-    return `//${detail.tagName} [${condition}]`
+    // let t = "//a [contains(@class, 'next')] [text()[contains(.,'下一頁')]]"
+    return `//${detail.tagName} ${textCondition} ${classNameCondition}`
 }
 
 
