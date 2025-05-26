@@ -58,7 +58,7 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
         goNextPage()
     },
 
-    keepShortcut: (shortcut: string) => {
+    keepShortcut: async (shortcut: string) => {
         if (!lastClickedElement) {
             console.warn("❗No element recorded.");
             return;
@@ -75,14 +75,14 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
         console.log(detail)
         console.log('-------------------------');
 
-        Chrome.sendMessage(
+        await Chrome.sendMessage(
             new ChromeMessage(
                 location.hostname,
                 MessageAction.storeShortcut,
                 shortcutAction,
                 detail
             )
-        )
+        )()
     },
     async showShortcut(shortcut: string) {
         console.log(`showShortcut: ${shortcut}`);
