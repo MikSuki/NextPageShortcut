@@ -32,7 +32,7 @@ document.addEventListener('keydown', function (event) {
 
 
 function getElementInfo(element: HTMLElement) {
-    // const keepedTags = ['tagName', 'id', 'className', 'textContent']
+    const keepedTags = ['tagName', 'id', 'className', 'textContent']
     const result: ElementDetail = {
         tagName: undefined,
         id: undefined,
@@ -40,18 +40,13 @@ function getElementInfo(element: HTMLElement) {
         textContent: undefined,
     }
 
-    if(element.id)
-        result.id = element.id;
-
-    if (element.textContent)
-        result.textContent = element.textContent;
-
-    if (element.tagName)
-        result.tagName = element.tagName;
-
-    if (element.className)
-        result.className = element.className;
-
+    // TODO: fix type error
+    keepedTags.forEach(tag => {
+        // @ts-ignore
+        if (element[tag]) { // @ts-ignore
+            result[tag] = element[tag];
+        }
+    })
 
     return result
 }
