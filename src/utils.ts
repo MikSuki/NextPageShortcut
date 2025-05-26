@@ -13,11 +13,12 @@ function getElementByXPath(xpath: string) {
 
 
 function parseToXpath(detail: ElementDetail): string {
+    let idCondition = ""
     let textCondition = ""
     let classNameCondition = ""
 
-    if (detail.textContent) {
-        textCondition = `[text()[contains(.,'${detail.textContent.trim()}')]]`
+    if (detail.id) {
+        classNameCondition += `contains(@id, '${detail.id}')`
     }
 
     if (detail.className) {
@@ -32,8 +33,13 @@ function parseToXpath(detail: ElementDetail): string {
         classNameCondition = `[${classNameCondition}]`
     }
 
+    if (detail.textContent) {
+        textCondition = `[text()[contains(.,'${detail.textContent.trim()}')]]`
+    }
+
+
     // let t = "//a [contains(@class, 'next')] [text()[contains(.,'下一頁')]]"
-    return `//${detail.tagName} ${textCondition} ${classNameCondition}`
+    return `//${detail.tagName}  ${idCondition} ${classNameCondition} ${textCondition}`
 }
 
 

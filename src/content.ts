@@ -40,6 +40,9 @@ function getElementInfo(element: HTMLElement) {
         textContent: undefined,
     }
 
+    if(element.id)
+        result.id = element.id;
+
     if (element.textContent)
         result.textContent = element.textContent;
 
