@@ -20,6 +20,12 @@ chrome.runtime.onInstalled.addListener(() => {
     });
 
     chrome.contextMenus.create({
+        id: "separator",
+        type: "separator",
+        contexts: ["all"]
+    });
+
+    chrome.contextMenus.create({
         id: "show-next-page-shortcut",
         title: 'show the remembered "next page"',
         contexts: ["all"]
