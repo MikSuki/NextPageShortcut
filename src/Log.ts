@@ -1,5 +1,5 @@
-function show(message: any) {
-    console.log(message);
+function show(...args: any[]) {
+    args.forEach(arg => console.log(arg))
 }
 
 

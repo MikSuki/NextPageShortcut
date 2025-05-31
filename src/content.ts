@@ -62,7 +62,7 @@ function getElementInfo(element: HTMLElement) {
 const messageHandler: Record<string, (shortcutAction: string) => void> = {
     keepShortcut: async (shortcut: string) => {
         if (!lastClickedElement) {
-            console.warn("❗No element recorded.");
+            Log.show("❗No element recorded.");
             return;
         }
 
@@ -72,10 +72,10 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
         const el = lastClickedElement
         const detail = getElementInfo(el)
 
-        console.log('-------------------------');
-        console.log(`detail:  `);
-        console.log(detail)
-        console.log('-------------------------');
+        Log.show('-------------------------');
+        Log.show(`detail:  `);
+        Log.show(detail)
+        Log.show('-------------------------');
 
         await Chrome.sendMessage(
             new ChromeMessage(
@@ -87,7 +87,7 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
         )()
     },
     async showShortcut(shortcut: string) {
-        console.log(`showShortcut: ${shortcut}`);
+        Log.show(`showShortcut: ${shortcut}`);
         const shortcutAction = Uills.stringToEnum(ShortcutAction, shortcut)
         if (!shortcutAction) return E.left(new Error("key of shortcut not found"))
 
@@ -100,7 +100,7 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
                 target => Highlighter.showElement(target)
             )
         )
-        console.log(`showShortcut end: ${shortcut}`);
+        Log.show(`showShortcut end: ${shortcut}`);
     }
 }
 
@@ -110,7 +110,7 @@ chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
         message.action,
         O.fromNullable,
         O.match(
-            () => console.log(`action not found`),
+            () => Log.show(`action not found`),
             action => messageHandler[action](message.shortcutAction),
         )
     )

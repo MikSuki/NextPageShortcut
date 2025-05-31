@@ -87,7 +87,7 @@ const actionHandler: Record<string, (message: any, sendResponse: (response?: any
             chrome.storage.local.set({
                 [hostname]: origin
             }, () => {
-                console.log(`儲存 ${hostname} 的資料：`, detail);
+                Log.show(`儲存 ${hostname} 的資料：`, detail);
                 Log.show(`儲存 ${hostname} 的資料：`)
             });
         });
@@ -96,14 +96,14 @@ const actionHandler: Record<string, (message: any, sendResponse: (response?: any
     getShortcut: (message: any, sendResponse: (response?: any) => void) => {
         const hostname = message.hostname;
         chrome.storage.local.get([hostname], function (result) {
-            console.log(hostname);
-            console.log(result[hostname]);
+            Log.show(hostname);
+            Log.show(result[hostname]);
             const shortcutAction = message.shortcutAction;
             const origin = result[hostname];
             const send = {
                 detail: origin[shortcutAction]
             }
-            console.log(' send:' + send)
+            Log.show(' send:' + send)
             sendResponse(send);
         })
 
@@ -116,7 +116,7 @@ chrome.runtime.onMessage.addListener((message, _: MessageSender, sendResponse) =
 
 
     Log.show(`receive action: ${message.action}`)
-    console.log(`receive action: ${message.action}`)
+    Log.show(`receive action: ${message.action}`)
 
     pipe(
         message.action,
@@ -127,7 +127,7 @@ chrome.runtime.onMessage.addListener((message, _: MessageSender, sendResponse) =
         E.map(action => actionHandler[action](message, sendResponse)),
         E.match(
             err => console.warn(err),
-            action => console.log(`action ${action} success`)
+            action => Log.show(`action ${action} success`)
         )
     )
 
