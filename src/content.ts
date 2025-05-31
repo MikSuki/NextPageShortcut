@@ -11,11 +11,19 @@ import {Highlighter} from "./Highlighter.ts";
 import {Chrome} from "./Chrome.ts";
 import {KeyCode} from "./enum/KeyCode.ts";
 import {ChromeMessage} from "./interface/ChromeMessage.ts";
+import {Log} from "./Log.ts";
 
 let lastClickedElement: HTMLElement | null
 
 document.addEventListener("contextmenu", e => {
-    lastClickedElement = e.target as HTMLElement;
+    Log.show(e)
+    Log.show(`can el click? ${'click' in e}`)
+    let target = e.target as HTMLElement
+    while (!('click' in target) || target.parentNode == null) {
+        Log.show('go parent')
+        target = target?.parentNode as HTMLElement ?? null
+    }
+    lastClickedElement = target
 }, true);
 
 document.addEventListener('keydown', function (event) {
