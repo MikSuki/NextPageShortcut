@@ -114,8 +114,6 @@ const actionHandler: Record<string, (message: any, sendResponse: (response?: any
 chrome.runtime.onMessage.addListener((message, _: MessageSender, sendResponse) => {
     const isValidAction = (action: string) => action in actionHandler;
 
-
-    Log.show(`receive action: ${message.action}`)
     Log.show(`receive action: ${message.action}`)
 
     pipe(
