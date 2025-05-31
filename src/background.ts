@@ -9,13 +9,13 @@ import {Log} from "./Log.ts";
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "next-page-shortcut",
-        title: 'keep this key for "next page"',
+        title: 'keep this button for "next page"',
         contexts: ["all"]
     });
 
     chrome.contextMenus.create({
         id: "last-page-shortcut",
-        title: 'keep this key for "last page"',
+        title: 'keep this button for "last page"',
         contexts: ["all"]
     });
 
