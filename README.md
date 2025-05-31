@@ -1,4 +1,4 @@
-# <img src="src/icon/icon.png" width="20"/> NextPageShortcut
+# NextPageShortcut
 
 ## What's NextPageShortcut?
 
