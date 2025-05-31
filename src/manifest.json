@@ -22,5 +22,8 @@
     "default_icon": {
       "128": "icon/icon.png"
     }
+  },
+  "icons": {
+    "16": "icon/icon.png"
   }
 }
