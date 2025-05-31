@@ -1,6 +1,6 @@
 import Toastify from "toastify-js"
 
-export function toast(text: string) {
+export function toast(text: string, isWarning = false) {
     Toastify({
         text,
         duration: 600,
@@ -12,7 +12,7 @@ export function toast(text: string) {
             left: "50%",
             transform: "translate(-50%, -50%)",
             background: "#333",
-            color: "#fff",
+            color: isWarning ? "#f7971e" : "#fff",
             padding: "1em 2em",
             borderRadius: "8px",
             boxShadow: "0 4px 10px rgba(0, 0, 0, 0.3)",

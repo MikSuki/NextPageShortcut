@@ -96,8 +96,7 @@ const messageHandler: Record<string, (shortcutAction: string) => void> = {
         pipe(
             target,
             E.match(
-                // TODO: show you don't have that shortcut
-                (err) => console.error(err),
+                () => toast(`❗you don't keep the shortcut "${shortcut}"`, true),
                 target => Highlighter.showElement(target)
             )
         )
@@ -138,8 +137,7 @@ async function clickShortcutElement(shortcutAction: ShortcutAction) {
     pipe(
         target,
         E.match(
-            // TODO: show to user
-            () => console.log(`shortcut not found`),
+            () => toast(`❗you don't keep the shortcut "${shortcutAction}"`, true),
             target => {
                 target.click()
                 toast(shortcutAction)
