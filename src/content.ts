@@ -139,8 +139,13 @@ async function clickShortcutElement(shortcutAction: ShortcutAction) {
         E.match(
             () => toast(`❗you don't keep the shortcut "${shortcutAction}"`, true),
             target => {
-                target.click()
-                toast(shortcutAction)
+                try {
+                    target.click()
+                    toast(shortcutAction)
+                }
+                catch (_) {
+                   toast(`❗click shortcut error QQ`, true)
+                }
             }
         )
     )
