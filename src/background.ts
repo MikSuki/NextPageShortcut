@@ -5,16 +5,17 @@ import {pipe} from "fp-ts/function";
 import * as Record from 'fp-ts/Record'
 // import * as O from 'fp-ts/Option'
 import * as E from 'fp-ts/Either'
+import {Log} from "./Log.ts";
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
-        id: "next-page-shortcut" ,
+        id: "next-page-shortcut",
         title: 'keep this key for "next page"',
         contexts: ["all"]
     });
 
     chrome.contextMenus.create({
-        id: "last-page-shortcut" ,
+        id: "last-page-shortcut",
         title: 'keep this key for "last page"',
         contexts: ["all"]
     });
@@ -26,8 +27,14 @@ chrome.runtime.onInstalled.addListener(() => {
     });
 
     chrome.contextMenus.create({
-        id: "show-shortcut",
-        title: "showShortcut",
+        id: "show-next-page-shortcut",
+        title: 'show the remembered "next page"',
+        contexts: ["all"]
+    });
+
+    chrome.contextMenus.create({
+        id: "show-last-page-shortcut",
+        title: 'show the remembered "last page"',
         contexts: ["all"]
     });
 });
@@ -63,8 +70,11 @@ chrome.contextMenus.onClicked.addListener((info: OnClickData, tab: Tab | undefin
                 case  "click":
                     chrome.tabs.sendMessage(context.tabId, {action: "clickElement", shortcutAction: 'nextPage'});
                     break
-                case  "show-shortcut":
+                case  "show-next-page-shortcut":
                     chrome.tabs.sendMessage(context.tabId, {action: "showShortcut", shortcutAction: 'nextPage'});
+                    break
+                case  "show-last-page-shortcut":
+                    chrome.tabs.sendMessage(context.tabId, {action: "showShortcut", shortcutAction: 'lastPage'});
                     break
             }
         })
@@ -78,14 +88,17 @@ const actionHandler: Record<string, (message: any, sendResponse: (response?: any
         const hostname = message.hostname;
         const shortcutAction = message.shortcutAction;
 
+
         chrome.storage.local.get([hostname], function (result) {
-            const origin = result[hostname];
+            const origin = result[hostname] || {};
             origin[shortcutAction] = detail;
 
+            Log.show(`store event: ${hostname}` )
             chrome.storage.local.set({
                 [hostname]: origin
             }, () => {
                 console.log(`儲存 ${hostname} 的資料：`, detail);
+                Log.show(`儲存 ${hostname} 的資料：`)
             });
         });
     },
@@ -93,12 +106,14 @@ const actionHandler: Record<string, (message: any, sendResponse: (response?: any
     getShortcut: (message: any, sendResponse: (response?: any) => void) => {
         const hostname = message.hostname;
         chrome.storage.local.get([hostname], function (result) {
+            console.log(hostname);
+            console.log(result[hostname]);
             const shortcutAction = message.shortcutAction;
             const origin = result[hostname];
             const send = {
                 detail: origin[shortcutAction]
             }
-            console.log('send:' + send)
+            console.log(' send:' + send)
             sendResponse(send);
         })
 
@@ -108,6 +123,10 @@ const actionHandler: Record<string, (message: any, sendResponse: (response?: any
 
 chrome.runtime.onMessage.addListener((message, _: MessageSender, sendResponse) => {
     const isValidAction = (action: string) => action in actionHandler;
+
+
+    Log.show(`receive action: ${message.action}`)
+    console.log(`receive action: ${message.action}`)
 
     pipe(
         message.action,
