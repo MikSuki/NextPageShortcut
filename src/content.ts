@@ -60,10 +60,6 @@ function getElementInfo(element: HTMLElement) {
 }
 
 const messageHandler: Record<string, (shortcutAction: string) => void> = {
-    clickElement: () => {
-        goNextPage()
-    },
-
     keepShortcut: async (shortcut: string) => {
         if (!lastClickedElement) {
             console.warn("❗No element recorded.");

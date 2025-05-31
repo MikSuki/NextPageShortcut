@@ -21,12 +21,6 @@ chrome.runtime.onInstalled.addListener(() => {
     });
 
     chrome.contextMenus.create({
-        id: "click",
-        title: "click",
-        contexts: ["all"]
-    });
-
-    chrome.contextMenus.create({
         id: "show-next-page-shortcut",
         title: 'show the remembered "next page"',
         contexts: ["all"]
@@ -66,9 +60,6 @@ chrome.contextMenus.onClicked.addListener((info: OnClickData, tab: Tab | undefin
                     break
                 case "last-page-shortcut":
                     chrome.tabs.sendMessage(context.tabId, {action: "keepShortcut", shortcutAction: "lastPage"});
-                    break
-                case  "click":
-                    chrome.tabs.sendMessage(context.tabId, {action: "clickElement", shortcutAction: 'nextPage'});
                     break
                 case  "show-next-page-shortcut":
                     chrome.tabs.sendMessage(context.tabId, {action: "showShortcut", shortcutAction: 'nextPage'});
