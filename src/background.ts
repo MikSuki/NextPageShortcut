@@ -3,7 +3,6 @@ import OnClickData = chrome.contextMenus.OnClickData;
 import MessageSender = chrome.runtime.MessageSender;
 import {pipe} from "fp-ts/function";
 import * as Record from 'fp-ts/Record'
-// import * as O from 'fp-ts/Option'
 import * as E from 'fp-ts/Either'
 import {Log} from "./Log.ts";
 
