@@ -1,4 +1,5 @@
 import {ElementDetail} from "./interface.ts";
+import {Log} from "./Log.ts";
 
 function getElementByXPath(xpath: string) {
     const result = document.evaluate(
@@ -23,7 +24,7 @@ function parseToXpath(detail: ElementDetail): string {
 
     if (detail.className) {
         const classNames = detail.className.trim().split(/\s+/)
-        console.log(classNames)
+        Log.show(classNames)
         classNames.map(className => {
             if (classNameCondition.length > 0) {
                 classNameCondition += " and "
@@ -39,7 +40,10 @@ function parseToXpath(detail: ElementDetail): string {
 
 
     // let t = "//a [contains(@class, 'next')] [text()[contains(.,'下一頁')]]"
-    return `//${detail.tagName}  ${idCondition} ${classNameCondition} ${textCondition}`
+    const xpath = `//${detail.tagName}  ${idCondition} ${classNameCondition} ${textCondition}`
+    Log.show(xpath)
+
+    return xpath
 }
 
 
