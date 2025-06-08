@@ -28,12 +28,10 @@ document.addEventListener("contextmenu", e => {
 
 document.addEventListener('keydown', function (event) {
     if (event.code === KeyCode.ArrowRight) {
-        event.preventDefault();
         goNextPage()
     }
 
     if (event.code === KeyCode.ArrowLeft) {
-        event.preventDefault();
         goLastPage()
     }
 });
