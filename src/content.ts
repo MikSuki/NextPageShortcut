@@ -135,7 +135,7 @@ async function clickShortcutElement(shortcutAction: ShortcutAction) {
     pipe(
         target,
         E.match(
-            () => toast(`❗you don't keep the shortcut "${shortcutAction}"`, true),
+            () => console.log(`❗you don't keep the shortcut "${shortcutAction}"`),
             target => {
                 try {
                     target.click()
